@@ -10,6 +10,9 @@
 		A60E26821CF6B4EE00B83557 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60E26811CF6B4EE00B83557 /* AppDelegate.swift */; };
 		A60E26841CF6B4EE00B83557 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A60E26831CF6B4EE00B83557 /* Assets.xcassets */; };
 		A60E26871CF6B4EE00B83557 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A60E26851CF6B4EE00B83557 /* MainMenu.xib */; };
+		A60E26921CF6BB4C00B83557 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A60E26911CF6BB4C00B83557 /* NetworkExtension.framework */; };
+		A60E26941CF6D2C800B83557 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60E26931CF6D2C800B83557 /* Keychain.swift */; };
+		A60E26961CF6D2FD00B83557 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A60E26951CF6D2FD00B83557 /* Security.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +21,10 @@
 		A60E26831CF6B4EE00B83557 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A60E26861CF6B4EE00B83557 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		A60E26881CF6B4EE00B83557 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A60E26901CF6B67800B83557 /* IKEv2-sample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "IKEv2-sample.entitlements"; sourceTree = "<group>"; };
+		A60E26911CF6BB4C00B83557 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		A60E26931CF6D2C800B83557 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		A60E26951CF6D2FD00B83557 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -25,6 +32,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A60E26961CF6D2FD00B83557 /* Security.framework in Frameworks */,
+				A60E26921CF6BB4C00B83557 /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -34,6 +43,8 @@
 		A60E26751CF6B4EE00B83557 = {
 			isa = PBXGroup;
 			children = (
+				A60E26951CF6D2FD00B83557 /* Security.framework */,
+				A60E26911CF6BB4C00B83557 /* NetworkExtension.framework */,
 				A60E26801CF6B4EE00B83557 /* IKEv2-sample */,
 				A60E267F1CF6B4EE00B83557 /* Products */,
 			);
@@ -50,10 +61,12 @@
 		A60E26801CF6B4EE00B83557 /* IKEv2-sample */ = {
 			isa = PBXGroup;
 			children = (
+				A60E26901CF6B67800B83557 /* IKEv2-sample.entitlements */,
 				A60E26811CF6B4EE00B83557 /* AppDelegate.swift */,
 				A60E26831CF6B4EE00B83557 /* Assets.xcassets */,
 				A60E26851CF6B4EE00B83557 /* MainMenu.xib */,
 				A60E26881CF6B4EE00B83557 /* Info.plist */,
+				A60E26931CF6D2C800B83557 /* Keychain.swift */,
 			);
 			path = "IKEv2-sample";
 			sourceTree = "<group>";
@@ -90,6 +103,17 @@
 				TargetAttributes = {
 					A60E267D1CF6B4EE00B83557 = {
 						CreatedOnToolsVersion = 7.3;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+							com.apple.VPNLite = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -129,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A60E26821CF6B4EE00B83557 /* AppDelegate.swift in Sources */,
+				A60E26941CF6D2C800B83557 /* Keychain.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,10 +257,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "IKEv2-sample/IKEv2-sample.entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "IKEv2-sample/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.nordvpn.IKEv2-sample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -244,10 +270,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "IKEv2-sample/IKEv2-sample.entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "IKEv2-sample/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.nordvpn.IKEv2-sample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -271,6 +298,7 @@
 				A60E268D1CF6B4EE00B83557 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
