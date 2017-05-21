@@ -4,48 +4,48 @@ import Security
 
 class Keychain {
 
-	class func persistentRef(key: String) -> NSData? {
-		let query: [NSObject: AnyObject] = [
-			kSecClass: kSecClassGenericPassword,
-			kSecAttrGeneric: key,
-			kSecAttrAccount: key,
-			kSecAttrAccessible: kSecAttrAccessibleAlways,
-			kSecMatchLimit: kSecMatchLimitOne,
-			kSecAttrService: NSBundle.mainBundle().bundleIdentifier!,
-			kSecReturnPersistentRef: kCFBooleanTrue
+	class func persistentRef(_ key: String) -> Data? {
+		let query: [AnyHashable: Any] = [
+			kSecClass as AnyHashable: kSecClassGenericPassword,
+			kSecAttrGeneric as AnyHashable: key,
+			kSecAttrAccount as AnyHashable: key,
+			kSecAttrAccessible as AnyHashable: kSecAttrAccessibleAlways,
+			kSecMatchLimit as AnyHashable: kSecMatchLimitOne,
+			kSecAttrService as AnyHashable: Bundle.main.bundleIdentifier!,
+			kSecReturnPersistentRef as AnyHashable: kCFBooleanTrue
 		]
 		
 		var secItem: AnyObject?
-		let result = SecItemCopyMatching(query, &secItem)
+		let result = SecItemCopyMatching(query as CFDictionary, &secItem)
 		if result != errSecSuccess {
 			return nil
 		}
 		
-		return secItem as? NSData
+		return secItem as? Data
 	}
 	
 
-	class func set(key: String, value: String) {
+	class func set(_ key: String, value: String) {
 		
-		let query: [NSObject: AnyObject] = [
-			kSecValueData: value.dataUsingEncoding(NSUTF8StringEncoding)!,
-			kSecClass: kSecClassGenericPassword,
-			kSecAttrGeneric: key,
-			kSecAttrAccount: key,
-			kSecAttrAccessible: kSecAttrAccessibleAlways,
-			kSecAttrService: NSBundle.mainBundle().bundleIdentifier!
+		let query: [AnyHashable: Any] = [
+			kSecValueData as AnyHashable: value.data(using: String.Encoding.utf8)!,
+			kSecClass as AnyHashable: kSecClassGenericPassword,
+			kSecAttrGeneric as AnyHashable: key,
+			kSecAttrAccount as AnyHashable: key,
+			kSecAttrAccessible as AnyHashable: kSecAttrAccessibleAlways,
+			kSecAttrService as AnyHashable: Bundle.main.bundleIdentifier!
 		]
 
 		clear(key)
-		SecItemAdd(query as CFDictionaryRef, nil)
+		SecItemAdd(query as CFDictionary, nil)
 	}
 
 
-	class func clear(key: String) {
-		let query: [NSObject: AnyObject] = [
-			kSecClass: kSecClassGenericPassword,
-			kSecAttrAccount: key
+	class func clear(_ key: String) {
+		let query: [AnyHashable: Any] = [
+			kSecClass as AnyHashable: kSecClassGenericPassword,
+			kSecAttrAccount as AnyHashable: key
 		]
-		SecItemDelete(query as CFDictionaryRef)
+		SecItemDelete(query as CFDictionary)
 	}
 }

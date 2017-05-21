@@ -13,25 +13,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBOutlet weak var txtUsername: NSTextField!
 	@IBOutlet weak var txtPassword: NSSecureTextField!
 	
-	let vpnManager = NEVPNManager.sharedManager()
-	let notificationCenter = NSNotificationCenter.defaultCenter()
+	let vpnManager = NEVPNManager.shared()
+	let notificationCenter = NotificationCenter.default
 	
 	
-	func applicationDidFinishLaunching(aNotification: NSNotification) {
+	func applicationDidFinishLaunching(_ aNotification: Notification) {
 		notificationCenter.addObserver(self,
 			selector: #selector(AppDelegate.onVpnStateChange(_:)),
-			name: NEVPNStatusDidChangeNotification, object: nil)
+			name: NSNotification.Name.NEVPNStatusDidChange, object: nil)
 		
-		btnDisconnect.enabled = false
+		btnDisconnect.isEnabled = false
 	}
 
 	
-	func applicationWillTerminate(aNotification: NSNotification) {
+	func applicationWillTerminate(_ aNotification: Notification) {
 		notificationCenter.removeObserver(self)
 	}
 	
 	
-	@IBAction func onConnectClick(sender: NSButton) {
+	@IBAction func onConnectClick(_ sender: NSButton) {
 		let host = getHost()
 		let username = getUsername()
 		let password = getPassword()
@@ -39,26 +39,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		let ikev2Protocol = createIKEv2Protocol(host, username: username,
 			password: password)
 
-		btnConnect.enabled = false
+		btnConnect.isEnabled = false
 		connect(ikev2Protocol)
 	}
 	
 	
-	@IBAction func onDisconnectClick(sender: NSButton) {
+	@IBAction func onDisconnectClick(_ sender: NSButton) {
 		vpnManager.connection.stopVPNTunnel()
-		btnDisconnect.enabled = false
+		btnDisconnect.isEnabled = false
 	}
 	
 	
-	private func connect(vpnProtocol: NEVPNProtocol) {
-		vpnManager.loadFromPreferencesWithCompletionHandler {
-			(error: NSError?) in
+	fileprivate func connect(_ vpnProtocol: NEVPNProtocol) {
+		vpnManager.loadFromPreferences {
+			(error: Error?) in
 			
 			self.vpnManager.protocolConfiguration = vpnProtocol
-			self.vpnManager.enabled = true
+			self.vpnManager.isEnabled = true
 			
-			self.vpnManager.saveToPreferencesWithCompletionHandler {
-				(error: NSError?) in
+			self.vpnManager.saveToPreferences {
+				(error: Error?) in
 				do {
 					try self.vpnManager.connection.startVPNTunnel()
 				} catch let error as NSError {
@@ -69,15 +69,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 	
 	
-	private func log(msg: String) {
-		dispatch_async(dispatch_get_main_queue()) {
-			self.txtLog?.textStorage?.appendAttributedString(
-				NSAttributedString(string: "\(NSDate()):\t\(msg)\n"))
+	fileprivate func log(_ msg: String) {
+		DispatchQueue.main.async {
+			self.txtLog?.textStorage?.append(
+				NSAttributedString(string: "\(Date()):\t\(msg)\n"))
 		}
 	}
 	
 	
-	private func getUsername() -> String {
+	fileprivate func getUsername() -> String {
 		let username = txtUsername?.stringValue
 		if username != nil {
 			return username!
@@ -87,7 +87,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 	
 	
-	private func getHost() -> String {
+	fileprivate func getHost() -> String {
 		let host = txtHost?.stringValue
 		if host != nil {
 			return host!
@@ -97,7 +97,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 
 	
-	private func getPassword() -> String {
+	fileprivate func getPassword() -> String {
 		let password = txtPassword?.stringValue
 		if password != nil {
 			return password!
@@ -107,7 +107,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 
 	
-	private func createIKEv2Protocol(host: String,
+	fileprivate func createIKEv2Protocol(_ host: String,
 		username: String, password: String) -> NEVPNProtocolIKEv2 {
 	
 		Keychain.set(username, value: password)
@@ -128,7 +128,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 	
 	
-	func onVpnStateChange(notification: NSNotification) {
+	func onVpnStateChange(_ notification: Notification) {
 		let state = vpnManager.connection.status
 		
 		var host = vpnManager.protocolConfiguration?.serverAddress
@@ -137,36 +137,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		}
 		
 		switch state {
-		case .Connecting:
+		case .connecting:
 			log("Connecting to \(host!)")
 			break
-		case .Connected:
+		case .connected:
 			log("Connected to \(host!)")
 			break
-		case .Disconnecting:
+		case .disconnecting:
 			log("Disconnecting from \(host!)")
 			break
-		case .Disconnected:
+		case .disconnected:
 			log("Disconnected from \(host!)")
 			break
-		case .Invalid:
+		case .invalid:
 			log("Invalid")
 			break
-		case .Reasserting:
+		case .reasserting:
 			log("Reasserting")
 			break
 		}
 		
-		if state == .Connecting || state == .Connected
-			|| state == .Reasserting {
+		if state == .connecting || state == .connected
+			|| state == .reasserting {
 		
-			btnDisconnect.enabled = true
-			btnConnect.enabled = false
-		} else if state == .Disconnected || state == .Disconnecting
-			|| state == .Invalid {
+			btnDisconnect.isEnabled = true
+			btnConnect.isEnabled = false
+		} else if state == .disconnected || state == .disconnecting
+			|| state == .invalid {
 			
-			btnDisconnect.enabled = false
-			btnConnect.enabled = true
+			btnDisconnect.isEnabled = false
+			btnConnect.isEnabled = true
 		}
 	}
 }
